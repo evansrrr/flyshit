@@ -1,1 +1,24 @@
 IDI_ICON1 ICON "icon-clash-verge-rev.ico"
+ // 版本信息资源
+ 1 VERSIONINFO
+ FILEVERSION 2,2,3,0
+ PRODUCTVERSION 1,0,0
+ FILEFLAGSMASK 0x3f
+ FILEFLAGS 0x0
+ BEGIN
+     BLOCK "StringFileInfo"
+     BEGIN
+         BLOCK "080404b0" // 语言代码：US English, Unicode
+         BEGIN
+             VALUE "FileDescription", "Clash Verge"
+             VALUE "FileVersion", "2.2.3.0"
+             VALUE "LegalCopyright", "GNU General Public License v3.0"
+             VALUE "ProductName", "Clash Verge"
+             VALUE "ProductVersion", "2.2.3"
+         END
+     END
+     BLOCK "VarFileInfo"
+     BEGIN
+         VALUE "Translation", 0x804, 1200 // 简体中文, CP1200 (Unicode)
+     END
+ END
